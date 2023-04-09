@@ -6,7 +6,7 @@ import { Layout, Input, Button } from 'antd'
 const { Sider } = Layout
 
 export default function Payments() {
-  const [showBill, setShowBill] = useState(false)
+  const [showBill, setShowBill] = useState(true)
   const [customer, setCustomer] = useState('');
   const handelCustomerCode = () => {
     console.log('handelCustomerCode: ' + customer);
