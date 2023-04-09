@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import {Avatar, Space, Button, Dropdown, Modal} from 'antd';
 import {useNavigate} from "react-router-dom";
 import Marquee from "react-fast-marquee";
-import logo_header from '../../assets/images/logo_slice_2.png';
+import logo_header from '../../assets/images/phenikaa-e.png';
 import {InfoCircleOutlined, LogoutOutlined} from "@ant-design/icons";
 import {logoutAction} from '../../utils/API/AuthAPI'
 import UserService from "../../infrastructure/UserService";
