@@ -33,7 +33,7 @@ export default function SignInScreen() {
       {/* Form user info */}
       <div className="login w-1/2 pt-48 h-full">
         <div className="max-w-md h-2/3 m-auto px-4 pt-10 shadow-lg shadow-gray-500/50">
-          <h1 className="h-12 text-4xl">Login to FastBill</h1>
+          <h1 className="h-12 text-4xl text-center">Đăng nhập</h1>
           <p className="h-20 text-lg font-light text-slate-500">
             Đăng nhập ngay để sử dụng các tính năng hữu ích của Phenikaa Electric nào!
           </p>
