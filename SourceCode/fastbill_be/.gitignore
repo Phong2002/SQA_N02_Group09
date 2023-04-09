@@ -1,0 +1,6 @@
+/node_modules
+.env
+api.http
+/src/config/config.json
+connection_db.js
+.vscode
