@@ -27,7 +27,6 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
     try {
         const data = req.body
-        console.log(data);
 
         if (!data.email || !data.password) {
             return res.status(400).json({
