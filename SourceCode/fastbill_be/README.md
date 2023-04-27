@@ -1,16 +1,15 @@
 ## 1. Clone -> cd fastbill_be
-## 2. Rename file: .exam.env => .env || connection_db.exam.js => connection_db.js 
-## 3. Config Environment variable in file .env and connection_db.js
-## 4. In src -> config -> Rename file: config.exam.json => config.json and config environment "development"  
-## 5. Install node_modules
+## 2. Rename file: .exam.env => .env 
+## 3. Add Environment variable .env
+## 4. Install node_modules
 ```bash
     npm install
 ```
-## 6. cd src -> run in Terminal: 
+## 5. cd src -> run in Terminal: 
 ```bash
     npx sequelize-cli db:migrate
 ```
-## 7. Run project
+## 6. Run project
 ```bash
     npm start
 ```
