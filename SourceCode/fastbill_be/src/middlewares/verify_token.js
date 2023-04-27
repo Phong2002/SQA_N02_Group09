@@ -6,7 +6,7 @@ const verifyToken = (req, res, next) => {
     const token = req.headers.authorization
 
     if (!token) {
-        return notAuth('Require authorization', res)
+        return notAuth('Missing token', res)
     } else {
         const accessToken = token.split(' ')[1]
         console.log(accessToken)
