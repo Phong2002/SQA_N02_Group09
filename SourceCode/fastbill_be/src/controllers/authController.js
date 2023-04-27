@@ -76,3 +76,58 @@ export const sendMail = async (req, res) => {
     }
 }
 
+
+export const resetPassword = async (req, res) => {
+    try {
+        const { email } = req.body
+
+        if (!email) {
+            return res.status(400).json({
+                err: 1,
+                mess: 'Missing user email!'
+            })
+        }
+
+        const response = await services.resetPassword(req.body)
+
+
+        return res.status(200).json(response)
+    } catch (error) {
+        console.log(error)
+        return interalServerError(res)
+    }
+}
+
+
+export const setNewPassword = async (req, res) => {
+    try {
+        const { password } = req.body
+        const token = req.headers.authorization
+
+        if (!password) {
+            return res.status(400).json({
+                err: 1,
+                mess: 'Missing password!'
+            })
+        } else if (password.length < 8) {
+            return res.status(400).json({
+                err: 1,
+                mess: 'Password length must be more than 8 characters!'
+            })
+        } else if (!token) {
+            return res.status(400).json({
+                err: 1,
+                mess: 'Missing token!'
+            })
+        }
+        else {
+            const response = await services.setNewPassword(password, token)
+            return res.status(200).json(response)
+        }
+
+    } catch (error) {
+        console.log(error)
+        return interalServerError(res)
+    }
+}
+

@@ -4,9 +4,8 @@ import jwt from "jsonwebtoken";
 
 export const getOneUer = (data) => new Promise(async (resolve, reject) => {
     try {
-
         const response = await db.User.findAll({
-            where: {id: data.id},
+            where: { id: data.id },
             attributes: {
                 exclude: ['password']
             },
@@ -103,3 +102,73 @@ export const getUserByToken = (token) => new Promise(async (resolve, reject) => 
         reject(error)
     }
 })
+
+
+
+export const editUser = (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let user = await db.User.findOne({
+                where: { id: data.id },
+                raw: false
+            })
+            if (user) {
+                user.email = data.email
+                user.firstName = data.firstName
+                user.lastName = data.lastName
+                user.phoneNumber = data.phoneNumber
+                user.birthDay = data.birthDay
+                user.address = data.address
+                user.gender = data.gender
+                user.avatar = data.avatar
+                user.cccd = data.cccd
+
+                await user.save();
+
+                resolve({
+                    err: 0,
+                    mess: 'Update successfull!'
+                });
+            } else {
+                resolve({
+                    err: 1,
+                    mess: 'User not found!'
+                });
+            }
+
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
+
+export const deleteUser = (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let user = await db.User.findOne({
+                where: { id: data.id}
+            })
+
+            if (user) {
+                await db.User.destroy({
+                    where: { id: data.id }
+                });
+                resolve({
+                    err: 0,
+                    mess: 'Delete user successfull!'
+                })
+
+            } else {
+                resolve({
+                    err: 1,
+                    mess: 'User does not exist!'
+                })
+            }
+
+        } catch (error) {
+            reject(error)
+        }
+
+    })
+}

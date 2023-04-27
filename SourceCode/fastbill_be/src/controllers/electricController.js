@@ -42,7 +42,7 @@ export const allElectricNumberByEI = async (req, res) => {
                 err: 1,
                 mess: 'Missing parameter!'
             })
-            
+
         } else {
             const response = await services.allElectricNumberByEI(req.body)
             return res.status(200).json(response)
@@ -91,6 +91,31 @@ export const findEI = async (req, res) => {
             const response = await services.findEI(req.body)
             return res.status(200).json(response)
         }
+    } catch (error) {
+        console.log(error)
+        return interalServerError(res)
+    }
+}
+
+export const payElictric = async (req, res) => {
+    try {
+        const { electricId, date } = req.body
+
+        if (!electricId) {
+            return res.status(400).json({
+                err: 1,
+                mess: 'Missing elctricId!'
+            })
+        } else if (!date) {
+            return res.status(400).json({
+                err: 1,
+                mess: 'Missing date!'
+            })
+        } else {
+            const response = await services.payElictric(req.body)
+            return res.status(200).json(response)
+        }
+
     } catch (error) {
         console.log(error)
         return interalServerError(res)

@@ -9,11 +9,10 @@ const initRoutes = (app) => {
     app.use('/api/v1/user', user)
     app.use('/api/v1/auth', auth)
     app.use('/api/v1/electric', electric)
-    app.use('/', notFound)
 
-    // return app.use('/', (req, res) => {
-    //     return res.send('SERVRT ON')
-    // })
+    return app.use('/', (req, res) => {
+        return res.send('SERVRT ON')
+    })
 }
 
 

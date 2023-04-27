@@ -1,5 +1,7 @@
 import db from '../models';
 import bcrypt from 'bcryptjs';
+import { text } from 'body-parser';
+import { date } from 'joi';
 import jwt from 'jsonwebtoken';
 import { where } from 'sequelize';
 const nodemailer = require("nodemailer");
@@ -10,10 +12,6 @@ const fs = require('fs');
 require.extensions['.html'] = function (module, filename) {
     module.exports = fs.readFileSync(filename, 'utf8');
 };
-
-const htmlform = require('../views/mailForm.html'); // path to your HTML template
-
-
 
 const salt = bcrypt.genSaltSync(10);
 
@@ -123,14 +121,107 @@ export const login = (data) => new Promise(async (resolve, reject) => {
     }
 })
 
-// // point to the template folder
-// const handlebarOptions = {
-//     viewEngine: {
-//         partialsDir: path.resolve('.src/views/'),
-//         defaultLayout: false,
-//     },
-//     viewPath: path.resolve('.src/views/'),
-// };
+
+export const resetPassword = (data) => new Promise(async (resolve, reject) => {
+    try {
+        // let client_url = data.client_url
+        let response = await db.User.findOne({
+            where: { email: data.email }
+        })
+
+        const token = response ? jwt.sign(
+            {
+                id: response.id,
+                email: response.email
+            },
+            process.env.JWT_SECRET,
+            {
+                expiresIn: '300s'
+            }
+        ) : null
+
+        if (!response) {
+            resolve({
+                err: 1,
+                mess: 'Email do not correct!'
+            })
+        } else {
+
+            let transporter = nodemailer.createTransport({
+                host: process.env.MAIL_HOST,
+                port: process.env.MAIL_PORT,
+                service: 'gmail',
+                secure: false, // true for 465, false for other ports
+                auth: {
+                    user: process.env.MAIL_USERNAME, // generated ethereal user
+                    pass: process.env.MAIL_PASSWORD, // generated ethereal password
+                },
+            });
+
+
+            let info = await transporter.sendMail({
+                from: `${process.env.COMPANY_NAME} <${process.env.MAIL_USERNAME}>`, // sender address
+                to: data.email, // list of receivers
+                subject: "Reset password", // Subject line
+                // text: data.text, // plain text body
+                html:
+                    `
+                    <span>Go to here reset your password (exp: 5p): <a href="${process.env.CLIENT_URL}/reset-password#token=${token}">Reset Password</a></span> <br/>
+                `, // html body
+            });
+
+            resolve({
+                err: 0,
+                mess: 'Check your email to reset password!',
+                info
+            })
+        }
+
+    } catch (error) {
+        console.log(error)
+        reject(error)
+    }
+})
+
+export const setNewPassword = (newPassword, token) => new Promise(async (resolve, reject) => {
+    try {
+
+        const accessToken = token.split(' ')[1]
+
+        jwt.verify(accessToken, process.env.JWT_SECRET, async (error, user) => {
+            if (error) {
+                resolve({
+                    err: 1,
+                    mess: 'Access token Expired or wrong',
+                })
+            } else {
+                const response = await db.User.findOne({
+                    where: { id: user.id },
+                })
+
+
+                if (response) {
+                    response.password = await hashUserPassword(newPassword)
+                    await response.save();
+
+                    resolve({
+                        err: 0,
+                        mess: 'Update new password successfull!'
+                    });
+                } else {
+                    resolve({
+                        err: 1,
+                        mess: 'User not found!'
+                    });
+                }
+            }
+        })
+
+    } catch (error) {
+        console.log(error)
+        reject(error)
+    }
+})
 
 
 
@@ -161,6 +252,7 @@ export const sendMail = (data) => new Promise(async (resolve, reject) => {
                         pass: process.env.MAIL_PASSWORD, // generated ethereal password
                     },
                 });
+
 
                 let info = await transporter.sendMail({
                     from: `${process.env.COMPANY_NAME} <${process.env.MAIL_USERNAME}>`, // sender address
