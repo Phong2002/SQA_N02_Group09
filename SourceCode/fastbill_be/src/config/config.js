@@ -1,4 +1,6 @@
-require("dotenv").config()
+require('dotenv').config({ path: "../../.env" });
+
+console.log(process.env.DB_USERNAME)
 
 module.exports = {
     development: {
@@ -10,7 +12,7 @@ module.exports = {
         logging: false,
         timezone: "+07:00"
     },
-    
+
     test: {
         username: process.env.DB_USERNAME,
         password: process.env.DB_PASSWORD,
