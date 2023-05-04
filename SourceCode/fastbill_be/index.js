@@ -19,7 +19,8 @@ const app = express();
 
 //config middelware cors 
 app.use(cors({
-    origin: process.env.CLIENT_URL,
+    credentials: true,
+    origin: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE']
 }));
 
