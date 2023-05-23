@@ -1,6 +1,6 @@
 import axios from "axios";
 
-var  URL_API = process.env.REACT_APP_API_URL
+var  URL_API = `http://${process.env.REACT_APP_SERVER_HOST}:${process.env.REACT_APP_SERVER_PORT}`
 
 const saveToken = response =>{
     const token = response.split(' ')[1];
@@ -12,6 +12,7 @@ const saveToken = response =>{
 }
 
 export const Login = (data,action)=>{
+    console.log(`=========${process.env.REACT_APP_SERVER_HOST}:${process.env.REACT_APP_SERVER_PORT}`)
     let payload = JSON.stringify({
         "email": data.email,
         "password":data.password
