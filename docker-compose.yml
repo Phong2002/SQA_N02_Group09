@@ -1,0 +1,56 @@
+version: "3.9"
+services:
+  frontend:
+    image: node:18-alpine
+    volumes:
+      - ./SourceCode/fastbill_fe:/app
+    working_dir: /app
+    environment:
+      - REACT_APP_SERVER_HOST=localhost
+      - REACT_APP_SERVER_PORT=5000
+    command: sh -c "yarn install && yarn start"
+    ports:
+      - "3000:3000"
+    networks:
+      - my_network
+
+  backend:
+    container_name: backend
+    image: node:18-alpine
+    volumes:
+        - ./SourceCode/fastbill_be:/app
+    working_dir: /app
+    environment:
+       - CLIENT_URL=frontend
+       - DB_USERNAME=root
+       - DB_PASSWORD=123456a@
+       - DB_NAME=phenikaaelectric
+       - DB_HOST=database
+       - DB_PORT=3306
+    command: sh -c "npm install && npm start"
+    ports:
+      - "5000:5000"
+    depends_on:
+      - database
+    networks:
+      - my_network
+
+  database:
+    image: mysql
+    restart: always
+    environment:
+        MYSQL_ROOT_PASSWORD: 123456a@
+    volumes:
+      - database_data:/var/lib/mysql
+    ports:
+      - '3307:3306'
+    networks:
+      - my_network
+
+volumes:
+  database_data:
+networks:
+  my_network:
+    driver: bridge
+
+
