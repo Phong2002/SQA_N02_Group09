@@ -2,7 +2,7 @@ import React from 'react'
 import Navigate from "../../components/layout/Navigate";
 import Header from "../../components/layout/Header";
 import Sider from "antd/es/layout/Sider";
-import {Button, DatePicker, Form, Input, Radio, Select} from 'antd';
+import {Button, DatePicker, Form, Input, notification, Radio, Select} from 'antd';
 import {Option} from "antd/es/mentions";
 import Search from "antd/es/input/Search";
 import { Avatar, Divider, List, Skeleton ,message} from 'antd';
@@ -21,6 +21,8 @@ export default function Register() {
     const [loading, setLoading] = useState(false);
     const [user,setUser]= useState(null);
     const [listUser,setListUser]=useState([]);
+    const [listUserDisplay,setListUserDisplay]=useState([]);
+
     const handleChangeCustomer=(e)=>{
         setIsNewCustomer(e.target.value)
     }
@@ -32,15 +34,29 @@ export default function Register() {
         console.log('Failed:', errorInfo);
     };
 
-    const handleSearch=()=>{
+    const handleSearch=(e)=>{
+        console.log(e.target.value)
+        setListUserDisplay(listUser.filter(item =>
+            `${item.firstName.toLowerCase()} ${item.lastName.toLowerCase()}`.includes(e.target.value.toLowerCase())||
+            `${item.email.toLowerCase()}`.includes(e.target.value.toLowerCase())
 
+        ))
     }
+
+    const openNotification = () => {
+        notification.success({
+            message: 'Thành công',
+            description:
+                'Thanh toán thành công',
+        });
+    };
 
     const handleLoadUser = ()=>{
         setLoading(true);
         requester.get("api/v1/user/get_all_user",{},(response)=>{
             setLoading(false);
             setListUser(response.users)
+            setListUserDisplay(response.users)
         })
 
     }
@@ -256,15 +272,13 @@ export default function Register() {
                         :
                         <div className={'flex items-center flex-col' }>
 
-                            <Search
+                            <Input
                                 placeholder="Tìm kiếm theo tên,CCCD,SĐT,..."
-                                allowClear
                                 enterButton="Tìm kiếm"
                                 size="large"
                                 style={{ width: 500 }}
-                                className={"bg-blue-500"}
-                                onSearch={handleSearch}
-                                // loading
+                                onChange={handleSearch}
+
                             />
 
                             <div
@@ -279,7 +293,7 @@ export default function Register() {
                                 }}
                             >
                                 <InfiniteScroll
-                                    dataLength={listUser.length}
+                                    dataLength={listUserDisplay.length}
                                     loader={
                                         <Skeleton
                                             avatar
@@ -292,7 +306,7 @@ export default function Register() {
                                     scrollableTarget="scrollableDiv"
                                 >
                                     <List
-                                        dataSource={listUser}
+                                        dataSource={listUserDisplay}
                                         renderItem={(item) => (
                                             <List.Item key={item.email} onClick={()=>handleClickUser(item)} className={"cursor-pointer hover:bg-gray-100"}>
                                                 <List.Item.Meta

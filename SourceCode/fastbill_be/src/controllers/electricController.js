@@ -21,6 +21,7 @@ export const addElectricNumber = async (req, res) => {
 }
 
 export const getAllElectricNumber = async (req, res) => {
+    console.log("=======================duma")
     try {
         const response = await services.getAllElectricNumber(req.body)
         return res.status(200).json(response)
@@ -53,10 +54,6 @@ export const allElectricNumberByEI = async (req, res) => {
         return interalServerError(res)
     }
 }
-
-
-
-
 
 
 export const createEI = async (req, res) => {
@@ -99,20 +96,15 @@ export const findEI = async (req, res) => {
 
 export const payElictric = async (req, res) => {
     try {
-        const { electricId, date } = req.body
+        const { electricId } = req.body
 
         if (!electricId) {
             return res.status(400).json({
                 err: 1,
                 mess: 'Missing elctricId!'
             })
-        } else if (!date) {
-            return res.status(400).json({
-                err: 1,
-                mess: 'Missing date!'
-            })
-        } else {
-            const response = await services.payElictric(req.body)
+        }else {
+            const response = await services.payElictric(electricId)
             return res.status(200).json(response)
         }
 
@@ -121,6 +113,27 @@ export const payElictric = async (req, res) => {
         return interalServerError(res)
     }
 }
+
+export const findUserByEI = async (req, res) => {
+    try {
+        const {electricId} = req.body
+        console.log("===electricId", electricId);
+
+        if (!electricId) {
+            return res.status(400).json({
+                err: 1,
+                mess: 'Missing userId!'
+            })
+        } else {
+            const response = await services.findUserByEI(req.body)
+            return res.status(200).json(response)
+        }
+    } catch (error) {
+        console.log(error)
+        return interalServerError(res)
+    }
+}
+
 
 
 

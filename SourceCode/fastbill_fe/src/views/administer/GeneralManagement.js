@@ -2,185 +2,110 @@ import React, {useEffect, useState} from 'react'
 import Navigate from "../../components/layout/Navigate";
 import Header from "../../components/layout/Header";
 import Sider from "antd/es/layout/Sider";
-import {Area, ComposedChart, Bar, CartesianGrid, Legend, Line, Tooltip, XAxis, YAxis } from "recharts";
-import {Avatar, Button, DatePicker, Empty, Form, Input, List, Radio, Select, Skeleton} from "antd";
-import { Space, Typography } from 'antd';
+import {Area, ComposedChart, Bar, CartesianGrid, Legend, Line, Tooltip, XAxis, YAxis} from "recharts";
+import {Avatar, Button, DatePicker, Empty, Form, Input, List, notification, Radio, Select, Skeleton} from "antd";
+import {Space, Typography} from 'antd';
 import Search from "antd/es/input/Search";
 import InfiniteScroll from "react-infinite-scroll-component";
 import requester from "../../infrastructure/requester";
 import dayjs from "dayjs";
 
 export default function GeneralManagement() {
-    const { Text, Link } = Typography;
+    const {Text, Link} = Typography;
 
-    const [listElectricId,setListElectrictId] = useState([])
+    const [listElectricId, setListElectrictId] = useState([])
 
-    const [stateView,setStateView] = useState(true)
+    const [currentElectricId, setCurrentElectricId] = useState()
 
-    const [year,setYear] = useState((new Date()).getFullYear())
+    const [stateView, setStateView] = useState(true)
 
-    const [user,setUser]= useState(null);
-    const [listUser,setListUser]=useState([]);
+    const [year, setYear] = useState((new Date()).getFullYear())
 
-    const [data,setData] = useState([]);
+    const [user, setUser] = useState(null);
+    const [listUser, setListUser] = useState([]);
+
+    const [data, setData] = useState([]);
 
     const [loading, setLoading] = useState(false);
 
+    const [dataElectricNumber, setDataElectricNumber] = useState([]);
 
 
-    const handleSearch=()=>{
+    const handleSearch = () => {
 
     }
 
-    const onChangeYearPicker=(date, dateString) => {
+    const onChangeYearPicker = (date, dateString) => {
         setYear(dateString)
     };
 
-    const handleLoadUser = ()=>{
+    const handleLoadUser = () => {
         setLoading(true);
-        requester.get("api/v1/user/get_all_user",{},(response)=>{
+        requester.get("api/v1/user/get_all_user", {}, (response) => {
             setLoading(false);
             setListUser(response.users)
+            openNotification()
         })
+    }
 
+
+
+
+    const handleLoadData = (id) => {
+        const body = {
+            electricId: id,
+            dateFirst: `1-1-${year}`,
+            dateSecond: `12-31-${year}`
+        }
+
+        requester.post("api/v1/electric/get_all_ei_data",
+            body,
+            (response) => {
+                if (response.err == 0) {
+                    setDataElectricNumber(transformedData(response.data))
+                    console.log("===transformedData(response.data)", transformedData(response.data));
+                    console.log(response.data)
+                } else {
+                }
+            })
+    }
+
+    const transformedData = (jsonData) => {
+        const months = [];
+        for (let month = 1; month <= 12; month++) {
+            const monthlyData = jsonData.filter(data => new Date(data.date).getMonth() + 1 === month);
+            const totalKW = monthlyData.reduce((sum, data) => sum + data.electricNumber, 0);
+            const totalVND = monthlyData.reduce((sum, data) => sum + data.moneyPay, 0);
+
+            const monthObject = {
+                KW: totalKW,
+                VND: totalVND,
+                name: `Tháng ${month}`
+            };
+
+            if (monthlyData.length === 0) {
+                monthObject.KW = 0;
+                monthObject.VND = 0;
+            }
+
+            months.push(monthObject);
+        }
+        return months
     }
 
     const handleChangeElectricId = (value) => {
         console.log(`selected ${value}`);
+        setCurrentElectricId(value)
     };
 
-    const handleClickUser=(user)=>{
+    const handleClickUser = (user) => {
         setUser(user)
-        requester.post("api/v1/electric/get_electric",{userId:user.id},(response)=>{
+        requester.post("api/v1/electric/get_electric", {userId: user.id}, (response) => {
             setListElectrictId(response.electricData)
+            response.electricData.length == 0 ? setCurrentElectricId(null) : setCurrentElectricId(response.electricData[0].electricId)
         })
     }
 
-    const data1 = [
-        {
-            "name": "Tháng 1",
-            "KW": 2400,
-            "VNĐ": 125756,
-        },
-        {
-            "name": "Tháng 2",
-            "KW": 1398,
-            "VNĐ": 254684,
-        },
-        {
-            "name": "Tháng 3",
-            "KW": 9800,
-            "VNĐ": 698453,
-        },
-        {
-            "name": "Tháng 4",
-            "KW": 3908,
-            "VNĐ": 734539,
-        },
-        {
-            "name": "Tháng 5",
-            "KW": 4800,
-            "VNĐ": 945645,
-        },
-        {
-            "name": "Tháng 6",
-            "KW": 3800,
-            "VNĐ": 453348,
-        },
-        {
-            "name": "Tháng 7",
-            "KW": 6688,
-            "VNĐ": 12356,
-        },
-        {
-            "name": "Tháng 8",
-            "KW": 1234,
-            "VNĐ": 66538,
-        },
-        {
-            "name": "Tháng 9",
-            "KW": 7268,
-            "VNĐ": 48652,
-        },
-        {
-            "name": "Tháng 10",
-            "KW": 3685,
-            "VNĐ": 48653,
-        },
-        {
-            "name": "Tháng 11",
-            "KW": 7681,
-            "VNĐ": 245633,
-        },
-        {
-            "name": "Tháng 12",
-            "KW": 8900,
-            "VNĐ": 75123,
-        }
-    ]
-
-    const data2 = [
-        {
-            "name": "Tháng 1",
-            "KW": 4537,
-            "VNĐ": 125463,
-        },
-        {
-            "name": "Tháng 2",
-            "KW": 7586,
-            "VNĐ": 589642,
-        },
-        {
-            "name": "Tháng 3",
-            "KW": 2456,
-            "VNĐ": 698453,
-        },
-        {
-            "name": "Tháng 4",
-            "KW": 4852,
-            "VNĐ": 256844,
-        },
-        {
-            "name": "Tháng 5",
-            "KW": 3652,
-            "VNĐ": 785932,
-        },
-        {
-            "name": "Tháng 6",
-            "KW": 4563,
-            "VNĐ": 789564,
-        },
-        {
-            "name": "Tháng 7",
-            "KW": 2121,
-            "VNĐ": 545412,
-        },
-        {
-            "name": "Tháng 8",
-            "KW": 5845,
-            "VNĐ": 785978,
-        },
-        {
-            "name": "Tháng 9",
-            "KW": 6854,
-            "VNĐ": 789567,
-        },
-        {
-            "name": "Tháng 10",
-            "KW": 5785,
-            "VNĐ": 457896,
-        },
-        {
-            "name": "Tháng 11",
-            "KW": 5746,
-            "VNĐ": 578964,
-        },
-        {
-            "name": "Tháng 12",
-            "KW": 7858,
-            "VNĐ": 57896,
-        }
-    ]
 
     const CustomTooltip = ({active, payload, label}) => {
         if (active && payload && payload.length) {
@@ -194,17 +119,25 @@ export default function GeneralManagement() {
         return null;
     };
 
-    const handleChangeStateView=(e)=>{
+    const handleChangeStateView = (e) => {
         setStateView(e.target.value)
         if(e.target.value){
-            setData(data1);
+            handleLoadData("ALL")
         }
-        else {
-            setData(data2)
+        else{
+            handleLoadData(currentElectricId)
         }
     }
 
-    useEffect(handleLoadUser,[])
+    useEffect(handleLoadUser, [])
+    useEffect(()=>{  if(stateView){
+        handleLoadData("ALL")
+    }
+    else {
+        handleLoadData(currentElectricId)
+    }},[year])
+    useEffect(()=>handleLoadData("ALL"), [])
+    useEffect(()=>handleLoadData(currentElectricId), [currentElectricId])
 
     return (
         <div className="Container grid grid-rows-6 grid-cols-6 grid-flow-col gap-2">
@@ -221,131 +154,135 @@ export default function GeneralManagement() {
                     </Radio.Group>
                 </div>
 
-                {stateView?<></>:
+                {stateView ? <></> :
 
-                <div className={'flex items-center flex-col' }>
+                    <div className={'flex items-center flex-col'}>
 
-                    <Search
-                        placeholder="Tìm kiếm theo tên,CCCD,SĐT,..."
-                        allowClear
-                        enterButton="Tìm kiếm"
-                        size="large"
-                        style={{ width: 500 }}
-                        className={"bg-blue-500"}
-                        onSearch={handleSearch}
-                        // loading
-                    />
+                        <Search
+                            placeholder="Tìm kiếm theo tên,CCCD,SĐT,..."
+                            allowClear
+                            enterButton="Tìm kiếm"
+                            size="large"
+                            style={{width: 500}}
+                            className={"bg-blue-500"}
+                            onSearch={handleSearch}
+                            // loading
+                        />
 
-                    <div
-                        id="scrollableDiv"
-                        style={{
-                            marginTop:10,
-                            height: 200,
-                            width:600,
-                            overflow: 'auto',
-                            padding: '0 16px',
-                            border: '1px solid rgba(140, 140, 140, 0.35)',
-                        }}
-                    >
-                        <InfiniteScroll
-                            dataLength={listUser.length}
-                            loader={
+                        <div
+                            id="scrollableDiv"
+                            style={{
+                                marginTop: 10,
+                                height: 200,
+                                width: 600,
+                                overflow: 'auto',
+                                padding: '0 16px',
+                                border: '1px solid rgba(140, 140, 140, 0.35)',
+                            }}
+                        >
+                            <InfiniteScroll
+                                dataLength={listUser.length}
+                                loader={
+                                    <Skeleton
+                                        avatar
+                                        paragraph={{
+                                            rows: 1,
+                                        }}
+                                        active
+                                    />
+                                }
+                                scrollableTarget="scrollableDiv"
+                            >
+                                <List
+                                    dataSource={listUser}
+                                    renderItem={(item) => (
+                                        <List.Item key={item.email} onClick={() => handleClickUser(item)}
+                                                   className={"cursor-pointer hover:bg-gray-100"}>
+                                            <List.Item.Meta
+                                                avatar={
+                                                    <Avatar src={item.avatar} size="large">
+                                                        {`${item.firstName} ${item.lastName}`.match(/(\b\S)?/g).join("").match(/(^\S|\S$)?/g).join("").toUpperCase()}
+                                                    </Avatar>}
+                                                title={<p>{`${item.firstName} ${item.lastName}`}</p>}
+                                                description={<p>{`${item.email} | ${item.phoneNumber}`}</p>}
+                                            />
+                                        </List.Item>
+                                    )}
+                                />
+                            </InfiniteScroll>
+
+                        </div>
+
+                        <div style={{width: 600, marginTop: 10}}>
+                            {user === null ?
                                 <Skeleton
+                                    style={{margin: 10}}
                                     avatar
+                                    size="large"
                                     paragraph={{
                                         rows: 1,
                                     }}
                                     active
                                 />
+                                :
+                                <Space align="center">
+                                    <List style={{width: 400}}
+                                          dataSource={[user]}
+                                          renderItem={(item) => (
+                                              <List.Item key={item.email}
+                                                         className={"cursor-pointer hover:bg-gray-100"}>
+                                                  <List.Item.Meta
+                                                      avatar={
+                                                          <Avatar src={item.avatar} size="large">
+                                                              {`${item.firstName} ${item.lastName}`.match(/(\b\S)?/g).join("").match(/(^\S|\S$)?/g).join("").toUpperCase()}
+                                                          </Avatar>}
+                                                      title={<p>{`${item.firstName} ${item.lastName}`}</p>}
+                                                      description={<p>{`${item.email} | ${item.phoneNumber}`}</p>}
+                                                  />
+                                              </List.Item>
+                                          )}
+                                    />
+                                    <Select
+                                        placeholder={"Chọn số công tơ điện"}
+                                        style={{width: 200}}
+                                        onChange={handleChangeElectricId}
+                                        value={currentElectricId}
+                                        options={
+                                            listElectricId.map(item => {
+                                                return {value: item.electricId, label: item.electricId}
+                                            })
+                                        }
+                                    />
+                                </Space>
                             }
-                            scrollableTarget="scrollableDiv"
-                        >
-                            <List
-                                dataSource={listUser}
-                                renderItem={(item) => (
-                                    <List.Item key={item.email} onClick={()=>handleClickUser(item)} className={"cursor-pointer hover:bg-gray-100"}>
-                                        <List.Item.Meta
-                                            avatar={
-                                                <Avatar src={item.avatar} size="large" >
-                                                    {`${item.firstName} ${item.lastName}`.match(/(\b\S)?/g).join("").match(/(^\S|\S$)?/g).join("").toUpperCase()}
-                                                </Avatar>}
-                                            title={<p>{`${item.firstName} ${item.lastName}`}</p>}
-                                            description= {<p>{`${item.email} | ${item.phoneNumber}`}</p>}
-                                        />
-                                    </List.Item>
-                                )}
-                            />
-                        </InfiniteScroll>
+                        </div>
+                    </div>}
 
-                    </div>
-
-                    <div style={{width:600,marginTop:10}}>
-                        {user===null?
-                            <Skeleton
-                                style={{margin:10}}
-                                avatar
-                                size="large"
-                                paragraph={{
-                                    rows: 1,
-                                }}
-                                active
-                            />
-                            :
-                            <Space  align="center">
-                                <List  style={{width:400}}
-                                       dataSource={[user]}
-                                       renderItem={(item) => (
-                                           <List.Item key={item.email} className={"cursor-pointer hover:bg-gray-100"}>
-                                               <List.Item.Meta
-                                                   avatar={
-                                                       <Avatar src={item.avatar} size="large" >
-                                                           {`${item.firstName} ${item.lastName}`.match(/(\b\S)?/g).join("").match(/(^\S|\S$)?/g).join("").toUpperCase()}
-                                                       </Avatar>}
-                                                   title={<p>{`${item.firstName} ${item.lastName}`}</p>}
-                                                   description= {<p>{`${item.email} | ${item.phoneNumber}`}</p>}
-                                               />
-                                           </List.Item>
-                                       )}
-                                />
-                                <Select
-                                    placeholder={"Chọn số công tơ điện"}
-                                    style={{ width: 200 }}
-                                    onChange={handleChangeElectricId}
-                                    options={
-                                    listElectricId.map(item=>{
-                                        return {value:item.electricId,label:item.electricId}
-                                    })
-                                   }
-                                />
-                            </Space>
-                        }
-                    </div>
-                </div>}
-
-                <DatePicker className={"ml-5"} style={{width:300}} defaultValue={dayjs(new Date())} placeholder={"Chọn năm theo dõi"}  onChange={onChangeYearPicker} picker="year" />
-                <Text strong className={"ml-5"} >Biểu đồ năm {year}</Text>
+                <DatePicker className={"ml-5"} style={{width: 300}} defaultValue={dayjs(new Date())}
+                            placeholder={"Chọn năm theo dõi"} onChange={onChangeYearPicker} picker="year"/>
+                <Text strong className={"ml-5"}>Biểu đồ năm {year}</Text>
                 <div className={"flex justify-around flex-wrap"}>
                     <div>
-                        <Text keyboard strong >Biểu đồ tiền điện</Text>
-                        <ComposedChart width={600} height={300} data={data}>
-                            <XAxis dataKey="name" />
-                            <YAxis />
+                        <Text keyboard strong>Biểu đồ tiền điện</Text>
+                        <ComposedChart width={600} height={300} data={dataElectricNumber}>
+                            <XAxis dataKey="name"/>
+                            <YAxis/>
                             <Tooltip content={CustomTooltip}/>
                             <CartesianGrid stroke="#f5f5f5"/>
-                            <Bar dataKey="VNĐ" barSize={20} fill="#413ea0"/>
-                            <Line type="monotone" dataKey="VNĐ" stroke="#ff7300" activeDot={{ r: 6 }}/>
+                            <Bar dataKey="VND" barSize={20} fill="#413ea0"/>
+                            <Line type="monotone" dataKey="VND" stroke="#ff7300" activeDot={{r: 6}}/>
                         </ComposedChart>
                     </div>
 
                     <div>
                         <Text keyboard strong>Biểu đồ lượng điện tiêu thụ</Text>
-                        <ComposedChart width={600} height={300} data={data}>
+                        <ComposedChart width={600} height={300} data={dataElectricNumber}>
                             <XAxis dataKey="name"/>
-                            <YAxis />
+                            <YAxis/>
                             <Tooltip content={CustomTooltip}/>
                             <CartesianGrid stroke="#f5f5f5"/>
                             <Bar dataKey="KW" barSize={20} stackId="name" fill="#fff200"/>
-                            <Line type="monotone" dataKey="KW"  stroke="#ff0000" activeDot={{ r: 6 }}/>
+                            <Line type="monotone" dataKey="KW" stroke="#ff0000" activeDot={{r: 6}}/>
                         </ComposedChart>
                     </div>
                 </div>

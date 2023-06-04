@@ -16,5 +16,4 @@ router.get('/get_all_user', user.getAllUser)
 router.get('/get_user_by_token', user.getUserByToken)
 router.post('/delete_user', user.deleteUser)
 
-
 module.exports = router
