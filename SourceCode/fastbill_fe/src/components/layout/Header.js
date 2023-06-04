@@ -51,7 +51,7 @@ export default function Header() {
                 {/* <div className='pl-10 w-[65%]'>
           
         </div> */}
-                <img className='slice_header_img' src={logo_header}></img>
+
             </div>
             <div className='h-full pt-2'>
                 <Marquee className='' gradient={false} speed={10}>
