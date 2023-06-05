@@ -18,7 +18,8 @@ import {Typography} from 'antd';
 import Search from "antd/es/input/Search";
 import requester from "../../infrastructure/requester";
 import dayjs from "dayjs";
-import viVN from 'antd/locale/vi_VN';
+import viVN from 'antd/es/date-picker/locale/vi_VN';
+
 import {calculateElectricityBill} from "../../utils/ElectrictNumber/ElectrictNumberUltis";
 import InfiniteScroll from "react-infinite-scroll-component";
 
@@ -86,6 +87,9 @@ export default function ElectricNumber() {
 
     const handleCloseModalAddElectric = () => {
         formAddElectricNumber.resetFields()
+        formAddElectricNumber.setFieldsValue({"month-picker": dayjs(`${year.getFullYear()}-01-01`)})
+        setMonth( new Date(`${year.getFullYear()}-01-01`))
+        setlastElectricNumber()
         setModalelectricNumber(false)
     }
 
@@ -147,8 +151,11 @@ export default function ElectricNumber() {
 
     const onChangeYearPicker = (date, dateString) => {
         setYear(date.$d)
-        formAddElectricNumber.setFieldsValue({"month-picker": dayjs(date.$d)}
-        )
+        formAddElectricNumber.setFieldsValue({"month-picker": dayjs(`${year.getFullYear()}-01-01`)})
+        setMonth( new Date(`${year.getFullYear()}-01-01`))
+        if(currentElectric.electric){
+            setlastElectricNumber(currentElectric.electric.find(e => e.month == 0))
+        }
     };
 
     const onChangeMonthPicker = (date, dateString) => {
@@ -226,8 +233,8 @@ export default function ElectricNumber() {
             <Text>Số tiền : {formatVND.format(record.electric.find(value => value.month == month).moneyPay)}</Text>
             <br/>
             {record.electric.find(value => value.month == month).isPaid === true ?
-                <Text>Trạng thái : Đã trả</Text> :
-                <Text>Trạng thái : Chưa trả</Text>}
+                <Text>Trạng thái : Đã thanh toán</Text> :
+                <Text>Trạng thái : Chưa thanh toán</Text>}
         </div>
     }
 
@@ -332,6 +339,7 @@ export default function ElectricNumber() {
                             onClick={() => {
                                 setModalelectricNumber(true)
                                 setCurrentElectric(record)
+                                setlastElectricNumber(record.electric.find(e => e.month == 0))
                             }}>
                         Cập nhật số điện
                     </Button>
@@ -396,7 +404,8 @@ export default function ElectricNumber() {
                                     format={"MM-YYYY"}
                                     style={{width: 300}}
                                     locale={viVN}
-                                    picker="month"/>
+                                    picker="month"
+                        />
                     </Form.Item>
                     <Form.Item label="Số điện tháng trước"
                     >
