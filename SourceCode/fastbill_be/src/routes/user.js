@@ -1,7 +1,5 @@
 import express from 'express'
 const user = require('../controllers/userController')
-import verifyToken from '../middlewares/verify_token'
-import verifyRole, { isAdmin } from '../middlewares/verify_roles'
 
 const router = express.Router()
 
