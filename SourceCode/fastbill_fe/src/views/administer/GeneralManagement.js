@@ -9,6 +9,7 @@ import Search from "antd/es/input/Search";
 import InfiniteScroll from "react-infinite-scroll-component";
 import requester from "../../infrastructure/requester";
 import dayjs from "dayjs";
+import {calculateElectricityFromAmount} from "../../utils/ElectrictNumber/ElectrictNumberUltis";
 
 export default function GeneralManagement() {
     const {Text, Link} = Typography;
@@ -44,17 +45,13 @@ export default function GeneralManagement() {
         requester.get("api/v1/user/get_all_user", {}, (response) => {
             setLoading(false);
             setListUser(response.users)
-            openNotification()
         })
     }
-
-
-
 
     const handleLoadData = (id) => {
         const body = {
             electricId: id,
-            dateFirst: `1-1-${year}`,
+            dateFirst: `12-1-${year-1}`,
             dateSecond: `12-31-${year}`
         }
 
@@ -70,11 +67,12 @@ export default function GeneralManagement() {
             })
     }
 
+
     const transformedData = (jsonData) => {
         const months = [];
         for (let month = 1; month <= 12; month++) {
             const monthlyData = jsonData.filter(data => new Date(data.date).getMonth() + 1 === month);
-            const totalKW = monthlyData.reduce((sum, data) => sum + data.electricNumber, 0);
+            const totalKW = monthlyData.reduce((sum, data) => sum +calculateElectricityFromAmount(data.moneyPay), 0);
             const totalVND = monthlyData.reduce((sum, data) => sum + data.moneyPay, 0);
 
             const monthObject = {
@@ -111,7 +109,7 @@ export default function GeneralManagement() {
         if (active && payload && payload.length) {
             return (
                 <div className=" bg-white border-0 border-white text-red-700">
-                    <p>{`${label} : ${payload[0].value} ${payload[0].dataKey === "KW" ? "KW" : "VNĐ"}`}</p>
+                    <p>{`${label} : ${new Intl.NumberFormat().format(payload[0].value)} ${payload[0].dataKey === "KW" ? "KW" : "VNĐ"}`}</p>
                 </div>
             );
         }

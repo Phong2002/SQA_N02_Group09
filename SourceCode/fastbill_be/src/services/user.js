@@ -41,6 +41,7 @@ export const getOneUer = (data) => new Promise(async (resolve, reject) => {
 export const getAllUer = () => new Promise(async (resolve, reject) => {
     try {
         const response = await db.User.findAll({
+            where:{role_code:'R2'},
             attributes: {
                 exclude: ['password']
             },
@@ -49,12 +50,10 @@ export const getAllUer = () => new Promise(async (resolve, reject) => {
                     model: db.Role, as: 'roleValue', attributes: ['value'],
 
                 },
-
                 {
                     model: db.ElectricNumber, all: true, as: 'electricData', attributes: ['electricId', 'address'],
 
                 }
-
             ],
         })
 

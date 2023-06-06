@@ -78,7 +78,6 @@ export default function Navigate(props) {
                 className="h-screen "
                 onSelect={(e) => setKey(e.key)}
                 selectedKeys={[props.location]}
-                // inlineCollapsed={true}
                 items={items}
 
             />
