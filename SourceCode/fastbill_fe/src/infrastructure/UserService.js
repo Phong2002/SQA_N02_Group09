@@ -77,7 +77,7 @@ export default {
         return false;
     },
 
-    isAdmin: () => {
+    isUser: () => {
         const token = localStorage.getItem('TOKEN')
         if (token !== null && token !== undefined) {
             const payload = JSON.parse(atob(token.split('.')[1]));

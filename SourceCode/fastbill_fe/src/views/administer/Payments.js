@@ -26,6 +26,14 @@ export default function Payments() {
         currency: 'VND',
     })
 
+    const handleSearch = (e)=>{
+        console.log("=========data",data)
+        setDisplayData(
+            data.filter(item =>
+                item.electricId.toLowerCase().includes(e.target.value.toLowerCase())))
+        console.log("===setDisplayData", displayData);
+    }
+
     const handleClickBill=(bill)=>{
       setCurrentBill(bill)
         getInforUserById(bill.electricId,bill)
@@ -40,7 +48,6 @@ export default function Payments() {
             })
         })
     }
-
 
     const handleLoadData = () => {
         const body = {
@@ -60,7 +67,6 @@ export default function Payments() {
                 }
             })
     }
-
 
     const openNotification = () => {
         notification.success({
@@ -86,11 +92,13 @@ export default function Payments() {
       </Sider>
       <Header />
       <div className='row-span-5 col-span-5 rm_max_height bg-white'>
+          <Input placeholder={"Tìm kiếm theo số công tơ, . . ."} onChange={(e)=>handleSearch(e)} ></Input>
+
           <div
               id="scrollableDiv"
               style={{
                   marginTop: 10,
-                  height: 250,
+                  height: 350,
                   width: '100%',
                   overflow: 'auto',
                   padding: '0 16px',
