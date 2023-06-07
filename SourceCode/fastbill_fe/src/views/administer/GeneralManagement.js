@@ -134,8 +134,9 @@ export default function GeneralManagement() {
     else {
         handleLoadData(currentElectricId)
     }},[year])
-    useEffect(()=>handleLoadData("ALL"), [])
     useEffect(()=>handleLoadData(currentElectricId), [currentElectricId])
+    useEffect(()=>handleLoadData("ALL"), [])
+
 
     return (
         <div className="Container grid grid-rows-6 grid-cols-6 grid-flow-col gap-2">
