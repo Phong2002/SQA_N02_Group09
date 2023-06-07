@@ -32,7 +32,7 @@ export default function Bill(props) {
         <p className='col-span-5'>P. Nguyễn Trác, Yên Nghĩa, Hà Đông, Hà Nội</p>
 
         <h1 className='col-span-1 text-base font-semibold'>Khách Hàng:</h1>
-        <p className='col-span-1'>{props.user ? props.user.firstName+props.user.lastName:''}</p>
+        <p className='col-span-1'>{props.user ? props.user.firstName+" "+props.user.lastName:''}</p>
 
         <h1 className='col-span-1'>Địa chỉ:</h1>
         <p className='col-span-2'>{props.user ? props.user.address:''}</p>
@@ -55,8 +55,8 @@ export default function Bill(props) {
         <tbody>
           <tr>
             <td className='border border-gray-300 text-center'>KT</td>
-            <td className='border border-gray-300 text-center'>4.565</td>
-            <td className='border border-gray-300 text-center'>3.814</td>
+            <td className='border border-gray-300 text-center'>{props.electric.electricNumber}</td>
+            <td className='border border-gray-300 text-center'>{props.electric.electricNumber-calculateElectricityFromAmount(props.electric.moneyPay)}</td>
             <td className='border border-gray-300 text-center'>{electricNumber}</td>
             <td className='border border-gray-300'></td>
             <td className='border border-gray-300'></td>

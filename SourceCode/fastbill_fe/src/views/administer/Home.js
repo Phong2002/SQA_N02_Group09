@@ -8,6 +8,7 @@ import { AliwangwangOutlined, DotChartOutlined, BulbOutlined, UngroupOutlined } 
 
 
 import { Layout } from 'antd'
+import ElectricityBill from "../../components/layout/ElectricityBill";
 const { Sider } = Layout
 
 export default function Home() {
@@ -52,9 +53,8 @@ export default function Home() {
           </div>
         </div>
         <div className='w-full flex'>
-          {/* <RenderLineChart /> */}
+          <ElectricityBill/>
           <PriceList />
-          <TimeLine />
         </div>
       </div>
     </div>
