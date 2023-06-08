@@ -57,6 +57,7 @@ export default function SignInScreen() {
                             ]}
                         >
                             <Input
+                                id="email"
                                 prefix={<UserOutlined className="site-form-item-icon"/>}
                                 placeholder="Email"
                                 className="h-12"
@@ -72,6 +73,7 @@ export default function SignInScreen() {
                             ]}
                         >
                             <Input.Password
+                                id="password"
                                 prefix={<LockOutlined className="site-form-item-icon"/>}
                                 type="password"
                                 placeholder="Mật khẩu"
