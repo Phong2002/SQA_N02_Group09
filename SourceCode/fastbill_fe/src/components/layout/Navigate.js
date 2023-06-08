@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from "react-router-dom";
 import { Menu } from 'antd'
 import PhenikaaE from '../../assets/images/phenikaa-e.png'
+import UserService from "../../infrastructure/UserService";
 import {
     UserOutlined,
     SettingOutlined,
@@ -25,15 +26,28 @@ const getItem = (label, key, icon, children, type) => {
     };
 } 
 
-const items = [
+const itemsAdmin = [
     getItem('Trang chủ', 'home',<HomeOutlined />),
-    getItem('Thông tin cá nhân', 'profile', <UserOutlined />),
     getItem('Quản lý', 'menu1', <SettingOutlined />, [
         getItem('Quản lý chung', 'general-management',<AreaChartOutlined />),
         getItem('Thanh toán', 'payment',<CreditCardOutlined />),
         getItem('Đăng ký', 'register',<PlusCircleOutlined />),
         getItem('Số điện', 'electric-number',<ThunderboltOutlined />),
     ]),
+    getItem(
+        <a href="https://www.evn.com.vn/" target="_blank" rel="noopener noreferrer">
+            Pages
+        </a>,
+        'link',
+        <LinkOutlined />,
+    ),
+];
+
+const itemsCustomer = [
+    getItem('Trang chủ', 'home',<HomeOutlined />),
+    getItem('Thông tin cá nhân', 'profile', <UserOutlined />),
+    getItem('Quản lý chung', 'general',<AreaChartOutlined />),
+    getItem('Số điện', 'electric-number-customer',<ThunderboltOutlined />),
     getItem(
         <a href="https://www.evn.com.vn/" target="_blank" rel="noopener noreferrer">
             Pages
@@ -62,8 +76,15 @@ export default function Navigate(props) {
         if (key === 'register') {
             navigate('/register')
         }
+
         if (key === 'electric-number') {
             navigate('/electric-number')
+        }
+        if (key === 'general') {
+            navigate('/general')
+        }
+        if (key === 'electric-number-customer') {
+            navigate('/electric-number-customer')
         }
     }, [key, navigate])
 
@@ -78,7 +99,7 @@ export default function Navigate(props) {
                 className="h-screen "
                 onSelect={(e) => setKey(e.key)}
                 selectedKeys={[props.location]}
-                items={items}
+                items={UserService.isAdmin()?itemsAdmin:itemsCustomer}
 
             />
         </div>
