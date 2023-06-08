@@ -6,7 +6,6 @@ import {calculateElectricityBill,calculateElectricityFromAmount} from "../../uti
 import requester from "../../infrastructure/requester";
 
 export default function Bill(props) {
-  console.log("--------------------props",props)
   const navigate = useNavigate();
   const handelBill = () => {
     requester.put("api/v1/electric/pay_electric",{"electricId":props.electric.id},(response)=>{
@@ -17,9 +16,6 @@ export default function Bill(props) {
   }
 
   const electricNumber = calculateElectricityFromAmount(props.electric.moneyPay)
-  console.log("===props.electric.moneyPay", props.electric.moneyPay);
-  console.log("===calculateElectricityFromAmount(props.electric.electricNumber)", calculateElectricityFromAmount(props.electric.electricNumber));
-  
   const formatter = new Intl.NumberFormat('vi-VN', {
     style: 'currency',
     currency: 'VND',
